@@ -1,0 +1,48 @@
+2.66) 
+int leftmost_one(unsigned x) {
+	//turn everything right of the MSB to 1s, then flip them to 0s
+	x |= x >> 16;
+	x |= x >> 8;
+	x |= x >> 4;
+	x |= x >> 2;
+	x |= x >> 1;
+	x ^= x >> 1;
+	return x;
+}
+
+2.71)
+a) The incorrect implementation does not sign extend, so the number is always positive.
+b)
+int xbyte(packed_t word, int bytenum) {
+	return ( word >> (bytenum << 3) & 0xFF) | ((0 - ( (((word >> (bytenum << 3)) & (1 << 7))) >> 7)) << 8); //buggy
+}
+
+2.72)
+a) Since size_t is unsigned, the expression maxbytes - sizeof(val) is implicitly casted to unsigned,
+which is always greater than or equal to 0.
+b) if ( (int)(maxbytes-sizeof(val)) >= 0 )
+
+2.81)
+/* Create some arbitrary values */
+int x = random();
+int y = random();
+/* Convert to unsigned */
+unsigned ux = (unsigned) x;
+unsigned uy = (unsigned) y;
+
+a) (x<y) == (-x>-y); This is always true because negation cant cause overflow, so this just a
+simple mathematical property of inequalities and negative multiplication.
+
+b) ((x+y)<<4) + y-x == 17*y+15*x; This can be false. Consider x = 0x7FFFFFFF and y = 0. The left hand
+side will evaluate to 0xFFFFFFE0 and the right hand side evaluates to 0x7FFFFFF1, which are not equal.
+
+c) ~x + ~y + 1 == ~(x + y); This is always true. Since we know that -x = ~x + 1, we can algebraicly
+manipulate both sides and end up with both sides being -x-y-1, which is true.
+
+d) (ux-uy) == -(unsigned)(y-x); This is always true. The subtraction in the bit level is identical for
+both unsigned and signed, so if we distribute the negative both sides have the same bit pattern and both
+are treated as unsigned, so the expression is always true.
+
+e) ((x >> 2) << 2) <= x; This is always true. The left hand side basically turns the last two binary 
+digits to 0 if they werent already, so no matter what the left hand side must be less than or equal to
+the right hand side.
