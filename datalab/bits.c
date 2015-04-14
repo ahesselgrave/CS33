@@ -155,7 +155,10 @@ int howManyBits(int x) {
  *   Rating: 4
  */
 int sm2tc(int x) {
-  return 2;
+  /* if x is positive, we are done. else, we need to flip everything and add 1 */
+  int sign = (x >> 31); //either 0 or 1
+  int magn = x & ~(1 << 31);
+  return (magn ^ sign) + (sign & 1);
 }
 /* 
  * isNonNegative - return 1 if x >= 0, return 0 otherwise 
@@ -165,7 +168,7 @@ int sm2tc(int x) {
  *   Rating: 3
  */
 int isNonNegative(int x) {
-  return 2;
+  return !(x >> 31); //half life 3 confirmed
 }
 
 /*
@@ -188,8 +191,10 @@ int rotateRight(int x, int n) {
  *   Rating: 2
  */
 int divpwr2(int x, int n) {
-    /* exploit right shift property of division by powers of 2 */
-    return x >> n; //buggy
+   /* exploit right shift property of division by powers of 2 
+      if number is negative, we need to add one*/
+  int sign = !!(x >> 31); // 0 or 1 sign bit
+  return (x >> n) + (sign & !!(x ^ (x >> n << n))); //buggy
 }
 /* 
  * allOddBits - return 1 if all odd-numbered bits in word set to 1
