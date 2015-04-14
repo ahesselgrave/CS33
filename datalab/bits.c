@@ -189,7 +189,7 @@ int rotateRight(int x, int n) {
  */
 int divpwr2(int x, int n) {
     /* exploit right shift property of division by powers of 2 */
-    return x >> n;
+    return x >> n; //buggy
 }
 /* 
  * allOddBits - return 1 if all odd-numbered bits in word set to 1
@@ -211,7 +211,7 @@ int allOddBits(int x) {
 int bitXor(int x, int y) {
   /* x XOR y == (x | y) & ~(x & y)
   By deMorgan's law, x | y == ~(~x & ~y) */
-  int o = ~(~x & ~y)
+  int o = ~(~x & ~y);
   int a = ~(x & y);
   return o & a;
 }
@@ -223,6 +223,7 @@ int bitXor(int x, int y) {
  *   Rating: 1
  */
 int isTmin(int x) {
-
-  return 2;
+  /* if x is INTMIN, then x+x will overflow to 0. !0 ^ !(INTMIN) is 1. This also works with 0,
+     since !(0+0) ^ !0 is 0. */
+  return !(x+x) ^ !x;
 }
