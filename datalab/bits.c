@@ -188,7 +188,8 @@ int rotateRight(int x, int n) {
  *   Rating: 2
  */
 int divpwr2(int x, int n) {
-    return 2;
+    /* exploit right shift property of division by powers of 2 */
+    return x >> n;
 }
 /* 
  * allOddBits - return 1 if all odd-numbered bits in word set to 1
@@ -208,7 +209,11 @@ int allOddBits(int x) {
  *   Rating: 1
  */
 int bitXor(int x, int y) {
-  return 2;
+  /* x XOR y == (x | y) & ~(x & y)
+  By deMorgan's law, x | y == ~(~x & ~y) */
+  int o = ~(~x & ~y)
+  int a = ~(x & y);
+  return o & a;
 }
 /*
  * isTmin - returns 1 if x is the minimum, two's complement number,
@@ -218,5 +223,6 @@ int bitXor(int x, int y) {
  *   Rating: 1
  */
 int isTmin(int x) {
+
   return 2;
 }
