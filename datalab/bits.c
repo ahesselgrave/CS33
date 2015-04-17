@@ -176,13 +176,17 @@ int isNonNegative(int x) {
 /*
  * rotateRight - Rotate x to the right by n
  *   Can assume that 0 <= n <= 31
- *   Examples: rotateRight(0x87654321,4) = 0x76543218
+ *   Examples: rotateRight(0x87654321,4) = 0x18765432
  *   Legal ops: ~ & ^ | + << >>
  *   Max ops: 25
  *   Rating: 3 
  */
 int rotateRight(int x, int n) {
-  return 2;
+  /* We right shift by n. We normalize the sign bit to 0 using a bitmask. 
+     We lopped off the first n bits, so we need to put them back into the last n bits */
+  int bitmask = ~(-1 << (32 - n)); //last n bits are 0, rest are one
+  x = x & bitmask;
+  return (x >> n) | (x << (32-n));
 }
 /* 
  * divpwr2 - Compute x/(2^n), for 0 <= n <= 30
@@ -208,9 +212,10 @@ int divpwr2(int x, int n) {
  *   Rating: 2
  */
 int allOddBits(int x) {
-  /* we need 0xAAAAAAAA */
+  /* we need 0xAAAAAAAA, which has all odd bits on. Bitwise and x with A and 
+     compare with 0xAAAAAAAA. */
   int allA = 0xAA | 0xAA << 8 | 0xAA << 16 | 0xAA << 24;
-  int oddbits = x & AAAAHHHHH;
+  int oddbits = x & allA;
   return !(allA ^ oddbits); //yes
 }
 /* 
