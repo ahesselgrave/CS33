@@ -156,8 +156,10 @@ int howManyBits(int x) {
  */
 int sm2tc(int x) {
   /* if x is positive, we are done. else, we need to flip everything and add 1 */
-  int sign = (x >> 31); //either 0 or 1
-  int magn = x & ~(1 << 31);
+  int sign = (x >> 31); //either 0 or -1
+  int magn = x & ~(1 << 31); //get everything but the sign bit with masking
+  // if sign is 0, we just get magn. if sign is -1, then the exclusive or will
+  // flip all the bits in magn and add 1
   return (magn ^ sign) + (sign & 1);
 }
 /* 
@@ -192,9 +194,11 @@ int rotateRight(int x, int n) {
  */
 int divpwr2(int x, int n) {
    /* exploit right shift property of division by powers of 2 
-      if number is negative, we need to add one*/
+      if number is negative, we need to add one if there is a remainder
+      There is a remainder if x >> n << n is different than x, i.e. leftover bits
+      are lopped off*/
   int sign = !!(x >> 31); // 0 or 1 sign bit
-  return (x >> n) + (sign & !!(x ^ (x >> n << n))); //buggy
+  return (x >> n) + (sign & !!(x ^ (x >> n << n)));
 }
 /* 
  * allOddBits - return 1 if all odd-numbered bits in word set to 1
@@ -204,7 +208,10 @@ int divpwr2(int x, int n) {
  *   Rating: 2
  */
 int allOddBits(int x) {
-  return 2;
+  /* we need 0xAAAAAAAA */
+  int allA = 0xAA | 0xAA << 8 | 0xAA << 16 | 0xAA << 24;
+  int oddbits = x & AAAAHHHHH;
+  return !(allA ^ oddbits); //yes
 }
 /* 
  * bitXor - x^y using only ~ and & 
