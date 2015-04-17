@@ -185,8 +185,8 @@ int rotateRight(int x, int n) {
   /* We right shift by n. We normalize the sign bit to 0 using a bitmask. 
      We lopped off the first n bits, so we need to put them back into the last n bits */
   int bitmask = ~(-1 << (32 - n)); //last n bits are 0, rest are one
-  x = x & bitmask;
-  return (x >> n) | (x << (32-n));
+  int masked = (x >> n) & bitmask;
+  return masked| (x << (32-n));
 }
 /* 
  * divpwr2 - Compute x/(2^n), for 0 <= n <= 30
