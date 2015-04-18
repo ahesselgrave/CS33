@@ -13,6 +13,11 @@
  * case it's OK.  
  */
 
+////////////////////////////////////////////////////////////////////////////
+// Name: Alex Hesselgrave
+// SID: 904273474
+///////////////////////////////////////////////////////////////////////////
+
 #if 0
 /*
  * Instructions to Students:
@@ -144,7 +149,21 @@ NOTES:
  *  Rating: 4
  */
 int howManyBits(int x) {
-  return 0;
+  int sign, y;
+  sign = x >> 31; // either 0 or -1
+  /* flip x to if it's negative, one side will always be zero */
+  x = (sign & ~x) | (~sign & x);
+  //we want to convert the most significant bit's index to a base 10 number 
+  //we do a binary search on x to find all nonzero subsections. If there is
+  //a 1 in the subsection found by x >> 2^n, then we add 2^n to y.
+  y = (!!(x >> 16)) << 4;
+  y |= (!!(x >> (y + 8))) << 3;
+  y |= (!!(x >> (y + 4))) << 2;
+  y |= (!!(x >> (y + 2))) << 1;
+  y |= (!!(x >> (y + 1)));
+  //we add 2 to y, one because of 0 indexing and 1 because we ignored the last bit
+  //check for zero because he's a sneaky one
+  return y + 2 + (~(!(x^0)) + 1);
 }
 /* 
  * sm2tc - Convert from sign-magnitude to two's complement
@@ -155,9 +174,10 @@ int howManyBits(int x) {
  *   Rating: 4
  */
 int sm2tc(int x) {
+  int sign,magn;
   /* if x is positive, we are done. else, we need to flip everything and add 1 */
-  int sign = (x >> 31); //either 0 or -1
-  int magn = x & ~(1 << 31); //get everything but the sign bit with masking
+  sign = (x >> 31); //either 0 or -1
+  magn = x & ~(1 << 31); //get everything but the sign bit with masking
   // if sign is 0, we just get magn. if sign is -1, then the exclusive or will
   // flip all the bits in magn and add 1
   return (magn ^ sign) + (sign & 1);
@@ -170,7 +190,8 @@ int sm2tc(int x) {
  *   Rating: 3
  */
 int isNonNegative(int x) {
-  return !(x >> 31); //half life 3 confirmed
+  // Return the opposite of the sign bit
+  return !(x >> 31); 
 }
 
 /*
@@ -182,11 +203,13 @@ int isNonNegative(int x) {
  *   Rating: 3 
  */
 int rotateRight(int x, int n) {
+  int bitmask, masked;
   /* We right shift by n. We normalize the sign bit to 0 using a bitmask. 
-     We lopped off the first n bits, so we need to put them back into the last n bits */
-  int bitmask = ~(-1 << (32 - n)); //last n bits are 0, rest are one
-  int masked = (x >> n) & bitmask;
-  return masked| (x << (32-n));
+     We lopped off the first n bits, so we need to put them back into the last n bits 
+     No subtraction, so add by negated form*/
+  bitmask = ~((~0) << (32 + ~n + 1)); //last n bits are 0, rest are one
+  masked = (x >> n) & bitmask;
+  return masked | (x << (32 + ~n + 1));
 }
 /* 
  * divpwr2 - Compute x/(2^n), for 0 <= n <= 30
@@ -197,11 +220,12 @@ int rotateRight(int x, int n) {
  *   Rating: 2
  */
 int divpwr2(int x, int n) {
+  int sign;
    /* exploit right shift property of division by powers of 2 
       if number is negative, we need to add one if there is a remainder
       There is a remainder if x >> n << n is different than x, i.e. leftover bits
       are lopped off*/
-  int sign = !!(x >> 31); // 0 or 1 sign bit
+  sign = !!(x >> 31); // 0 or 1 sign bit
   return (x >> n) + (sign & !!(x ^ (x >> n << n)));
 }
 /* 
@@ -212,10 +236,11 @@ int divpwr2(int x, int n) {
  *   Rating: 2
  */
 int allOddBits(int x) {
+  int allA, oddbits;
   /* we need 0xAAAAAAAA, which has all odd bits on. Bitwise and x with A and 
      compare with 0xAAAAAAAA. */
-  int allA = 0xAA | 0xAA << 8 | 0xAA << 16 | 0xAA << 24;
-  int oddbits = x & allA;
+  allA = 0xAA | 0xAA << 8 | 0xAA << 16 | 0xAA << 24;
+  oddbits = x & allA;
   return !(allA ^ oddbits); //yes
 }
 /* 
@@ -226,10 +251,11 @@ int allOddBits(int x) {
  *   Rating: 1
  */
 int bitXor(int x, int y) {
+  int o,a;
   /* x XOR y == (x | y) & ~(x & y)
   By deMorgan's law, x | y == ~(~x & ~y) */
-  int o = ~(~x & ~y);
-  int a = ~(x & y);
+  o = ~(~x & ~y);
+  a = ~(x & y);
   return o & a;
 }
 /*
